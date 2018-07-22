@@ -21,7 +21,7 @@ public:
 	//! constructor
 	polynomial(const vector<coeff_t>& p): poly(p) {};
 	polynomial(coeff_t c){
-		poly = vector<coeff_t>(1,c);
+		poly = vector<coeff_t>(1,c);// (size, value_to_fill)
 	};
 	polynomial(){};
 
@@ -98,7 +98,7 @@ public:
 		tmp.resize(deg);
 		poly = tmp;
 	}
-	
+	// derivative of polynomial in a finite field
 	void derive(){
 		assert(poly.size()>0);
 		poly[0] = coeff_t(0);
