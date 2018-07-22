@@ -58,7 +58,11 @@ dftpfe dftpfe_d(N,A);
 RScode<pfe,dftpfe> innercode(N,K,A,dftpfe_d);
 pfe message[] = {1,2,3};
 vector<pfe> message_vector(message, message+3);
-vector<pfe> code_vector;
-innercode.RS_systematic_encode(message_vector, code_vector);
-cout << code_vector << endl;
+vector<pfe> encoded_vector, decoded_vector;
+innercode.RS_systematic_encode(message_vector, encoded_vector);
+cout << encoded_vector << endl;
+encoded_vector[3].element = 456;
+encoded_vector[4].element = 123;
+innercode.RSdecode(decoded_vector, encoded_vector);
+cout << decoded_vector << endl;
 }

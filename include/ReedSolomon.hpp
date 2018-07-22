@@ -59,7 +59,7 @@ class RScode{
 	// decoding when the first n-k entries of the Fourier transform of c are equal zero
 	// c: received vector 
 	// crec: recovered vector
-	// retured is a pair, where pair.fist is the number of erasurs and pair.second the number of errors
+	// retured is a pair, where pair.fist is the number of erasures and pair.second the number of errors
 	pair<unsigned,unsigned> RSdecode(vector<GFE>& crec, const vector<GFE>& c); 
 
 	// decode a shortened RS code 
@@ -155,15 +155,15 @@ vector<GFE>& RScode<GFE,Dft>::RS_systematic_encode(const vector<GFE>& infvec, ve
 // decoding when the first n-k entries of the Fourier transform of c are equal zero
 // c: received vector 
 // crec: recovered vector
-// retured is a pair, where pair.fist is the number of erasurs and pair.second the number of errors
+// retured is a pair, where pair.first is the number of erasurs and pair.second the number of errors
 template<class GFE, class Dft>
 pair<unsigned,unsigned> RScode<GFE,Dft>::RScode<GFE,Dft>::RSdecode(vector<GFE>& crec, const vector<GFE>& c){
 	
 	pair<unsigned, unsigned> erctr;
-	
+	// codeword received
 	crec = c; // this will be the recoverd vector
 
-	GFE am = a.inverse();
+	GFE am = a.inverse(); // am is the inverse of primitive element 
 	assert(n_u == crec.size());
 	unsigned d = n_u-k_u+1;
 	
@@ -197,9 +197,9 @@ pair<unsigned,unsigned> RScode<GFE,Dft>::RScode<GFE,Dft>::RSdecode(vector<GFE>& 
 	dftd.dft(crec,Crec); 
 
 	// compute syndrome from received C
-	vector<GFE> syndv(n_u-k_u);
-	for(unsigned i=0; i< n_u-k_u  ;++i)
-		syndv[i] = Crec[i];
+	vector<GFE> syndv(n_u-k_u); //syndrome vector
+	for(unsigned i=1; i<= n_u-k_u  ;++i)
+		syndv[i-1] = Crec[i];
 	polynomial<GFE> synd(syndv);
 
 	synd *= elp; 
@@ -239,17 +239,22 @@ pair<unsigned,unsigned> RScode<GFE,Dft>::RScode<GFE,Dft>::RSdecode(vector<GFE>& 
 	// obtain the errata locator as the product of the error evaluator and the errata evaluator
 	elp *= aux2;
 	
-
+    // Get the lowest coefficient in the polynomial elp
+	polynomial<GFE> A0 = polynomial<GFE>(elp.poly[0]);
+	// rem2 is polynomial Omega
+	pair<polynomial<GFE>, polynomial<GFE> > res_tmp= divide<GFE>(rem2, A0);
+	pair<polynomial<GFE>, polynomial<GFE> > res_tmp2= divide<GFE>(elp, A0);
+	polynomial<GFE> Omega = res_tmp.first;
+	elp = res_tmp2.first;
 	//// Forney's algorithm to find the error values
 
 	polynomial<GFE> elpder = elp;
-	elpder.derive(); // derivative of the error locator polynomal
+	elpder.derive(); // derivative of the error locator polynomial
 
 	// compute the error values
 	
 	//vector<GFE> err_val(n);
 	GFE ami = GFE(1);	
-	GFE ai = GFE(1);
 	for(unsigned i=0;i<n_u; ++i){
 		if( elp.evaluate(ami) == GFE(0)  ){
 			// e_j = a^i \Gamma(a^-i) / \Lambda'(a^-i)
@@ -259,13 +264,12 @@ pair<unsigned,unsigned> RScode<GFE,Dft>::RScode<GFE,Dft>::RSdecode(vector<GFE>& 
 			//cout << "corrected at " << i << endl;
 			GFE elpderval = elpder.evaluate(ami); 
 			if(! elpderval.iszero()){ 
-				crec[i] += ai*( rem2.evaluate(ami)/ elpderval);
+				crec[i] += ( Omega.evaluate(ami)/ elpderval);
 			}else{ // otherwise something did go wrong, we cannot divide by zero..
 				erctr.second = n_u; // this marks an decoding error
 			}
 		}
 		ami *= am;
-		ai *= a;
 	}
 	return erctr;
 }

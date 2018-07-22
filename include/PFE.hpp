@@ -15,7 +15,8 @@ using namespace std;
 
 
 
-
+//! for debugging purpose only
+//! print the boost map of the cyclic group structure
 template< class MapType >
 void print_map(const MapType & map,
                const std::string & separator,
@@ -32,6 +33,7 @@ void print_map(const MapType & map,
 
 
 // prime field element (PFE)
+// class template el_t should be interger type
 template<class el_t = int> class PFE:
 	boost::field_operators< PFE<el_t>,
 	boost::equality_comparable< PFE<el_t>
@@ -60,7 +62,7 @@ public:
 	
 	static void initialize_exp_el(el_t priel){
 		
-		int el = 1;
+		el_t el = 1;
 		for(unsigned i = 0; i < prime-1; ++i){
 			// insert (exponent, corresponding element)
 			
@@ -123,7 +125,19 @@ public:
 	}
 	
 	bool iszero() const { return (element == 0);  };
-
+	//! get the multiplication order of the element
+	unsigned order() const {
+		// additive zero has no order
+		if(element == 0){ return -1;}
+		el_t tmp = element;
+		unsigned ord = 1;
+		while(!(tmp == 1)){
+			ord++;
+			tmp = (tmp * element) % prime;
+			//cout << tmp << endl;
+		}
+		return ord;
+	}
 };	
 
  template<class el_t>
