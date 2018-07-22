@@ -17,9 +17,11 @@ class polynomial:
 {
 public:
 	//! contains the coefficients of the polynomial
+	//! poly coefficient is from smallest to largest
 	std::vector<coeff_t> poly;
 	//! constructor
 	polynomial(const vector<coeff_t>& p): poly(p) {};
+	//! constructor (size, value_to_fill)
 	polynomial(coeff_t c){
 		poly = vector<coeff_t>(1,c);
 	};
@@ -84,9 +86,6 @@ public:
 		return (*this);
 	}
 
-
-
-
 	//! multipy the polynomial with a mononmial with coefficient c and exponent exp
 	void multiply_monomial(coeff_t c,unsigned exp){
 		vector<coeff_t> tmp(poly.size() + exp);
@@ -101,7 +100,7 @@ public:
 		tmp.resize(deg);
 		poly = tmp;
 	}
-	
+	// derivative of polynomial in a finite field
 	void derive(){
 		assert(poly.size()>0);
 		poly[0] = coeff_t(0);
@@ -164,7 +163,7 @@ public:
 
 
 
-// divide a by b; computer a/b and remainder(a/b)
+// divide a by b; compute a/b and remainder(a/b)
 // return pair with fist: quotient, second: remainder
 template<class co_t>
 pair<polynomial<co_t>,polynomial<co_t> > divide(const polynomial<co_t>& a, const polynomial<co_t>& b){

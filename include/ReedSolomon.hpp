@@ -116,7 +116,7 @@ vector<GFE>& RScode<GFE,Dft>::RS_systematic_encode(const vector<GFE>& infvec, ve
 
 	// compute the generator polynomial 
 	polynomial<GFE> gp = polynomial<GFE>(1);
-	GFE ai = GFE(1); 
+	GFE ai = GFE(a); 
 	for(unsigned i=1;i <= n_u-k_u; ++i){
 		vector<GFE> prov(2);
 		prov[0] = GFE(0) - ai;
@@ -135,7 +135,7 @@ vector<GFE>& RScode<GFE,Dft>::RS_systematic_encode(const vector<GFE>& infvec, ve
 	polynomial<GFE> sp = mp*xnmk; // the codeword polynomial
 	
 	// obtain s_r(x) = p(x)*x^(n-k) mod g(x) as res.second 
-	pair<polynomial<GFE>, polynomial<GFE> > res = divide<GFE>( sp ,gp);
+	pair<polynomial<GFE>, polynomial<GFE> > res = divide<GFE>(sp ,gp);
 
 	// c(x) = p(x)*x^(n-k) - s_r(x)
 	sp -= res.second; 

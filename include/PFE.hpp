@@ -55,7 +55,8 @@ public:
 
 	static void set_prime(const el_t& a){prime = a;}
 
-	//! for initializying the map exponent to element; takes as parameter a primitive element of GF(prime)
+	//! for initializying the map exponent to element; 
+	//! takes as parameter a primitive element of GF(prime)
 	
 	static void initialize_exp_el(el_t priel){
 		
